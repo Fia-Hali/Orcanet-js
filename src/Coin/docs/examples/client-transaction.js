@@ -1,6 +1,6 @@
 'use strict';
 
-const bcoin = require('../..');
+const bcoin = require('../../lib/bcoin');
 const plugin = bcoin.wallet.plugin;
 const network = bcoin.Network.get('testnet');
 
@@ -19,11 +19,11 @@ const nodeClient = new bcoin.NodeClient({
   port: network.rpcPort
 });
 
-async function fundWallet(wdb, addr) {
+async function fundWallet(wdb, addr, value) {
   // Coinbase
   const mtx = new bcoin.MTX();
   mtx.addOutpoint(new bcoin.Outpoint(bcoin.consensus.ZERO_HASH, 0));
-  mtx.addOutput(addr, 50000);
+  mtx.addOutput(addr, value);
   // mtx.addOutput(addr, 50460);
   // mtx.addOutput(addr, 50460);
   // mtx.addOutput(addr, 50460);
@@ -104,7 +104,7 @@ async function callNodeApi() {
     '/wallet/test/address',
     {account: 'default'}
   );
-  await fundWallet(wdb, receive.address);
+  await fundWallet(wdb, receive.address,5000);
 
   // API call: walletClient.getBalance('test', 'default')
   const balance = await walletClient.request(
@@ -123,7 +123,7 @@ async function callNodeApi() {
   console.log(acct);
 
   // Send to our new account.
-  const hash = await sendTX(acct.receiveAddress, 10000);
+  const hash = await sendTX(acct.receiveAddress, 1000);
 
   console.log('Sent TX:');
   console.log(hash);
